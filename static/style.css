@@ -62,3 +62,15 @@ h1 {
     background-color: #ffdddd;
     border-color: #ff9c9c;
 }
+
+.like-section {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+    display: flex;
+    align-items: center;
+}
+
+.like-section span {
+    font-weight: bold;
+}

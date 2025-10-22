@@ -9,7 +9,6 @@
 <body>
     <h1>Welcome to My Flask Blog!</h1>
 
-    <!-- Wende die .button-Klasse auf den Link an -->
     <a href="{{ url_for('add') }}" class="button">Add a new post</a>
 
     {% for post in posts %}
@@ -18,14 +17,17 @@
         <p><em>Written by {{ post.author }}</em></p>
         <p>{{ post.content }}</p>
 
-        <!-- Container für die Aktions-Buttons -->
-        <div class="post-actions">
-            <!-- Bearbeiten-Link als Button -->
-            <a href="{{ url_for('update', post_id=post.id) }}" class="button">Edit</a>
+        <!-- NEUER LIKE-BEREICH -->
+        <div class="like-section">
+            <span>Likes: {{ post.get('likes', 0) }}</span>
+            <form action="{{ url_for('like_post', post_id=post.id) }}" method="POST" style="display: inline; margin-left: 10px;">
+                <button type="submit" class="button">Like</button>
+            </form>
+        </div>
 
-            <!-- Löschen-Formular -->
+        <div class="post-actions">
+            <a href="{{ url_for('update', post_id=post.id) }}" class="button">Edit</a>
             <form action="{{ url_for('delete', post_id=post.id) }}" method="POST" style="display: inline;">
-                <!-- Wende die .button- und .button-delete-Klassen an -->
                 <button type="submit" class="button button-delete">Delete</button>
             </form>
         </div>
