@@ -12,10 +12,20 @@ def get_posts():
     except FileNotFoundError:
         return []
 
+
 def save_posts(posts):
     """Eine Hilfsfunktion, um Posts in die JSON-Datei zu speichern."""
     with open('blog_posts.json', 'w') as f:
         json.dump(posts, f, indent=4)
+
+
+def fetch_post_by_id(post_id):
+    """Findet einen einzelnen Beitrag anhand seiner ID."""
+    posts = get_posts()
+    for post in posts:
+        if post['id'] == post_id:
+            return post
+    return None
 
 
 @app.route('/')
@@ -47,20 +57,45 @@ def add():
     return render_template('add.html')
 
 
-# NEUE ROUTE ZUM LÖSCHEN VON BEITRÄGEN
 @app.route('/delete/<int:post_id>', methods=['POST'])
 def delete(post_id):
-    # 1. Alle aktuellen Beiträge laden
     posts = get_posts()
-
-    # 2. Eine neue Liste erstellen, die alle Beiträge außer dem zu löschenden enthält
     posts_after_deletion = [post for post in posts if post['id'] != post_id]
-
-    # 3. Die neue, gefilterte Liste in die JSON-Datei zurückspeichern
     save_posts(posts_after_deletion)
-
-    # 4. Zurück zur Startseite umleiten
     return redirect(url_for('index'))
+
+
+# NEUE ROUTE ZUM BEARBEITEN VON BEITRÄGEN
+@app.route('/update/<int:post_id>', methods=['GET', 'POST'])
+def update(post_id):
+    # Finde den zu bearbeitenden Beitrag
+    post = fetch_post_by_id(post_id)
+    if post is None:
+        # Wenn der Beitrag nicht existiert, gib einen Fehler zurück
+        return "Post not found", 404
+
+    # Wenn das Formular abgeschickt wurde (POST)
+    if request.method == 'POST':
+        # Hole die aktualisierten Daten aus dem Formular
+        updated_author = request.form.get('author')
+        updated_title = request.form.get('title')
+        updated_content = request.form.get('content')
+
+        # Lade alle Beiträge, finde den richtigen und aktualisiere ihn
+        all_posts = get_posts()
+        for p in all_posts:
+            if p['id'] == post_id:
+                p['author'] = updated_author
+                p['title'] = updated_title
+                p['content'] = updated_content
+                break
+
+        # Speichere die aktualisierte Liste und leite zur Startseite um
+        save_posts(all_posts)
+        return redirect(url_for('index'))
+
+    # Wenn die Seite normal aufgerufen wird (GET), zeige das Formular an
+    return render_template('update.html', post=post)
 
 
 if __name__ == '__main__':

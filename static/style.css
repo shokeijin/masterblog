@@ -10,6 +10,7 @@ h1 {
     color: #4F4F4F;
 }
 
+/* DIESER TEIL WAR VERMUTLICH VERLOREN GEGANGEN */
 .post {
     background-color: #FFF;
     border: 1px solid #DDD;
@@ -24,4 +25,40 @@ h1 {
 
 .post p {
     margin: 10px 0;
+}
+
+/* DIE NEUEN STILE FÜR DIE BUTTONS (BLEIBEN ERHALTEN) */
+.post-actions {
+    margin-top: 15px;
+}
+
+.button {
+    display: inline-block;
+    padding: 8px 15px;
+    margin: 5px 5px 5px 0;
+    border: 1px solid #DDD;
+    border-radius: 5px;
+    background-color: #f7f7f7;
+    color: #333;
+    text-decoration: none;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.button:hover {
+    background-color: #e7e7e7;
+    border-color: #c7c7c7;
+}
+
+.button-delete {
+    background-color: #fff2f2;
+    border-color: #ffbaba;
+    color: #d8000c;
+}
+
+.button-delete:hover {
+    background-color: #ffdddd;
+    border-color: #ff9c9c;
 }
