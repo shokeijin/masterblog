@@ -6,8 +6,11 @@ app = Flask(__name__)
 
 def get_posts():
     """Eine Hilfsfunktion, um Posts aus der JSON-Datei zu laden."""
-    with open('blog_posts.json', 'r') as f:
-        return json.load(f)
+    try:
+        with open('blog_posts.json', 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return []
 
 def save_posts(posts):
     """Eine Hilfsfunktion, um Posts in die JSON-Datei zu speichern."""
@@ -21,44 +24,43 @@ def index():
     return render_template('index.html', posts=blog_posts)
 
 
-# Neue Route zum Hinzufügen von Beiträgen
 @app.route('/add', methods=['GET', 'POST'])
 def add():
-    # Wenn das Formular abgeschickt wurde (POST-Request)
     if request.method == 'POST':
-        # 1. Daten aus dem Formular holen
         author = request.form.get('author')
         title = request.form.get('title')
         content = request.form.get('content')
-
-        # 2. Bestehende Beiträge laden
         posts = get_posts()
-
-        # 3. Eine neue, eindeutige ID generieren
-        # Wir nehmen die ID des letzten Posts und addieren 1.
-        # Wenn es keine Posts gibt, starten wir mit 1.
         if posts:
             new_id = posts[-1]['id'] + 1
         else:
             new_id = 1
-
-        # 4. Neuen Beitrag als Dictionary erstellen
         new_post = {
             "id": new_id,
             "author": author,
             "title": title,
             "content": content
         }
-
-        # 5. Neuen Beitrag zur Liste hinzufügen und speichern
         posts.append(new_post)
         save_posts(posts)
-
-        # 6. Zurück zur Startseite umleiten
         return redirect(url_for('index'))
-
-    # Wenn die Seite normal aufgerufen wird (GET-Request), zeige das Formular
     return render_template('add.html')
+
+
+# NEUE ROUTE ZUM LÖSCHEN VON BEITRÄGEN
+@app.route('/delete/<int:post_id>', methods=['POST'])
+def delete(post_id):
+    # 1. Alle aktuellen Beiträge laden
+    posts = get_posts()
+
+    # 2. Eine neue Liste erstellen, die alle Beiträge außer dem zu löschenden enthält
+    posts_after_deletion = [post for post in posts if post['id'] != post_id]
+
+    # 3. Die neue, gefilterte Liste in die JSON-Datei zurückspeichern
+    save_posts(posts_after_deletion)
+
+    # 4. Zurück zur Startseite umleiten
+    return redirect(url_for('index'))
 
 
 if __name__ == '__main__':
